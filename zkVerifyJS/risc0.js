@@ -1,4 +1,4 @@
-import { zkVerifySession, ZkVerifyEvents } from "zkverifyjs";
+import { zkVerifySession, ZkVerifyEvents, Risc0Version } from "zkverifyjs";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -46,7 +46,7 @@ async function main() {
 
   const { events } = await session
     .verify()
-    .risc0({ version: "V1_2" })
+    .risc0({ version: Risc0Version.V1_2 })
     .execute({
       proofData: {
         proof: proof.proof,
