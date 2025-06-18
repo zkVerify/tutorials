@@ -1,0 +1,6 @@
+[package]
+name = "multiply"
+type = "bin"
+authors = [""]
+
+[dependencies]
