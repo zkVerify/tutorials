@@ -49,7 +49,7 @@ export default function ProofComponent() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ proof: '0x'+Buffer.from(proof).toString('hex'), publicInputs: publicInputs, vk: Buffer.from(vk).toString('base64') })
+        body: JSON.stringify({ proof: proof, publicInputs: publicInputs, vk: Buffer.from(vk).toString('base64') })
       });
 
       const data = await res.json();

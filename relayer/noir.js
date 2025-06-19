@@ -5,19 +5,22 @@ dotenv.config();
 
 const API_URL = 'https://relayer-api.horizenlabs.io/api/v1';
 
-const vkhex = fs.readFileSync("./assets/noir/vk.hex").toString();
-const proofhex = fs.readFileSync("./assets/noir/proof.hex").toString();
-const pubhex = fs.readFileSync("./assets/noir/pub.hex").toString();
+const bufvk = fs.readFileSync("./assets/noir/vk");
+const bufproof = fs.readFileSync("./assets/noir/proof");
+const base64Proof = bufproof.toString("base64");
+const base64Vk = bufvk.toString("base64");
 
 async function main() {
     
     const params = {
         "proofType": "ultraplonk",
         "vkRegistered": false,
+        "proofOptions": {
+            "numberOfPublicInputs": 1
+        },
         "proofData": {
-            "proof": proofhex.split("\n")[0],
-            "publicSignals": pubhex.split("\n").slice(0,-1),
-            "vk": vkhex.split("\n")[0]
+            "proof": base64Proof,
+            "vk": base64Vk
         }
     }
 
