@@ -15,6 +15,7 @@ async function main() {
     const params = {
         "proofType": "ultraplonk",
         "vkRegistered": false,
+        "chainId":11155111,
         "proofOptions": {
             "numberOfPublicInputs": 1
         },
@@ -34,14 +35,15 @@ async function main() {
 
     while(true){
         const jobStatusResponse = await axios.get(`${API_URL}/job-status/${process.env.API_KEY}/${requestResponse.data.jobId}`);
-        if(jobStatusResponse.data.status === "Finalized"){
-            console.log("Job finalized successfully");
+        if(jobStatusResponse.data.status === "Aggregated"){
+            console.log("Job aggregated successfully");
             console.log(jobStatusResponse.data);
+            fs.writeFileSync("aggregation.json", JSON.stringify({...jobStatusResponse.data.aggregationDetails, aggregationId: jobStatusResponse.data.aggregationId}))
             break;
         }else{
             console.log("Job status: ", jobStatusResponse.data.status);
-            console.log("Waiting for job to finalize...");
-            await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before checking again
+            console.log("Waiting for job to aggregated...");
+            await new Promise(resolve => setTimeout(resolve, 20000)); // Wait for 5 seconds before checking again
         }
     }
 }
