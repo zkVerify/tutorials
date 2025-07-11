@@ -46,7 +46,7 @@ async function main() {
 
   const { events } = await session
     .verify()
-    .risc0({ version: Risc0Version.V1_2 })
+    .risc0({ version: Risc0Version.V2_1 })
     .execute({
       proofData: {
         proof: proof.proof,

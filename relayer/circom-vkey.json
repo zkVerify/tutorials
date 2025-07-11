@@ -1,0 +1,8 @@
+{
+  "error": "Bad Request",
+  "code": "REGISTER_VK_FAILED",
+  "message": "Verification Key Registration Failed: Verification key is already registered",
+  "meta": {
+    "vkHash": "0xb287bffe9c629ea3a572b6e319992ecc0311340f20edceaedabd26bc2b95b9b4"
+  }
+}

@@ -8,18 +8,43 @@ const API_URL = 'https://relayer-api.horizenlabs.io/api/v1';
 const proof = JSON.parse(fs.readFileSync("./assets/risc0/proof.json")); // Following the Risc Zero tutorial
 
 async function main() {
+
+    if(!fs.existsSync("r0-vkey.json")){
+        // Registering the verification key
+        try{
+            const regParams = {
+                "proofType": "risc0",
+                "proofOptions": {
+                    "version": "V2_1" // Replace this with the Risc0 version 
+                },
+                "vk": proof.image_id
+            }
+            const regResponse = await axios.post(`${API_URL}/register-vk/${process.env.API_KEY}`, regParams);
+            fs.writeFileSync(
+                "r0-vkey.json",
+                JSON.stringify(regResponse.data)
+            );
+        }catch(error){
+            fs.writeFileSync(
+                "r0-vkey.json",
+                JSON.stringify(error.response.data)
+            );
+        }
+    }
+
+    const vk = JSON.parse(fs.readFileSync("r0-vkey.json"));
     
     const params = {
         "proofType": "risc0",
-        "vkRegistered": false,
+        "vkRegistered": true,
         "chainId":11155111,
         "proofOptions": {
-            "version": "V1_2" // Replace this with the Risc0 version 
+            "version": "V2_1" // Replace this with the Risc0 version 
         },
         "proofData": {
             "proof": proof.proof,
             "publicSignals": proof.pub_inputs,
-            "vk": proof.image_id
+            "vk": vk.vkHash || vk.meta.vkHash
         }
     }
 
