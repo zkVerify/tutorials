@@ -13,7 +13,7 @@ async function main() {
     const params = {
         "proofType": "groth16",
         "vkRegistered": false,
-        "chainId":11155111,
+        "chainId":845320009,
         "proofOptions": {
             "library": "snarkjs",
             "curve": "bn128"

@@ -10,6 +10,7 @@ const bufproof = fs.readFileSync("./assets/noir/proof");
 const base64Proof = bufproof.toString("base64");
 const base64Vk = bufvk.toString("base64");
 
+
 async function main() {
     
     const params = {

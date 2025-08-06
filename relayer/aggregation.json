@@ -1,14 +1,10 @@
 {
-  "receipt": "0x84c25ba051bc3cc66a74bcf2169befad5f348d0ad7b24efd6c68c70a25783ad2",
-  "receiptBlockHash": "0x11802c585a367a02df4b0555d1310ff96fa5490fb6e8da8ebefde3f537ef5cb7",
-  "root": "0x84c25ba051bc3cc66a74bcf2169befad5f348d0ad7b24efd6c68c70a25783ad2",
+  "receipt": "0xd043d77f9d041b4a3fa934d698cc41deeef08d9cc3df4a62a0f3a9d6fafdf813",
+  "receiptBlockHash": "0xf7946cf4aa6626677cd2a1c2d46ff7a363d8ff50f63953cf0ee115ee14e589ce",
+  "root": "0xd043d77f9d041b4a3fa934d698cc41deeef08d9cc3df4a62a0f3a9d6fafdf813",
   "leaf": "0xd72c67547100dd6f00c60f05f4bb7cf33f22b077e6a76125e911e091197bd55c",
-  "leafIndex": 6,
-  "numberOfLeaves": 8,
-  "merkleProof": [
-    "0xc714a8b348a529a98fd65c547d7d0819afd3be840fdbad95f04c5ce026424cd4",
-    "0x958bf24c3a974ce5ad51461bdea442de1907d90d237bba2be3aaca3ec609d777",
-    "0x9367529337c04392b71c3174eaaba23fa2c8d8b599b82ec1ec1a420bbf2e2d77"
-  ],
-  "aggregationId": 29537
+  "leafIndex": 0,
+  "numberOfLeaves": 1,
+  "merkleProof": [],
+  "aggregationId": 12
 }
