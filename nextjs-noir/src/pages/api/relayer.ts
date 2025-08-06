@@ -1,6 +1,8 @@
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Buffer } from "buffer";
+import fs from "fs";
+import path from "path";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse){
     
@@ -12,15 +14,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const proofUint8 = new Uint8Array(Object.values(req.body.proof));
 
+        if(fs.existsSync(path.join(process.cwd(), "public", "multiply", "vkey.json")) === false) {
+          await registerVk(req.body.vk);
+          await new Promise(resolve => setTimeout(resolve, 5000));
+        }
+
+        const vk = fs.readFileSync(
+          path.join(
+            process.cwd(),
+            "public",
+            "multiply",
+            "vkey.json"
+          ),
+          "utf-8"
+        );
+
         const params = {
             "proofType": "ultraplonk",
-            "vkRegistered": false,
+            "vkRegistered": true,
             "proofOptions": {
                 "numberOfPublicInputs": 1 
             },
             "proofData": {
                 "proof": Buffer.from(concatenatePublicInputsAndProof(req.body.publicInputs, proofUint8)).toString("base64"),
-                "vk": req.body.vk
+                "vk": JSON.parse(vk).vkHash || JSON.parse(vk).meta.vkHash,
             }    
         }
 
@@ -33,7 +50,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         while(true){
+          try{
             const jobStatusResponse = await axios.get(`${API_URL}/job-status/${process.env.API_KEY}/${requestResponse.data.jobId}`);
+            console.log("Job Status: ", jobStatusResponse.data);
             if(jobStatusResponse.data.status === "IncludedInBlock"){
                 console.log("Job Included in Block successfully");
                 res.status(200).json(jobStatusResponse.data);
@@ -43,6 +62,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 console.log("Waiting for job to finalize...");
                 await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before checking again
             }
+          } catch (error: any) {
+            if(error.response.status === 503){
+              console.log("Service Unavailable, retrying...");
+              await new Promise(resolve => setTimeout(resolve, 5000)); // Wait for 5 seconds before retrying
+            }
+          }
         }
     }catch(error){
         console.log(error)
@@ -74,4 +99,35 @@ function concatenatePublicInputsAndProof(publicInputsHex: any, proofUint8: any) 
   newProof.set(proofUint8, publicInputBytes.length);
 
   return newProof;
+}
+
+async function registerVk(vk: any){
+
+  const API_URL = "https://relayer-api.horizenlabs.io/api/v1";
+
+  const params = {
+    proofType: "ultraplonk",
+    vk: vk,
+    proofOptions: {
+      "numberOfPublicInputs": 1
+    },
+  };
+
+  try{
+    const res = await axios.post(
+      `${API_URL}/register-vk/${process.env.API_KEY}`,
+      params
+    )
+    console.log(res)
+    fs.writeFileSync(
+        path.join(process.cwd(), "public", "multiply", "vkey.json"),
+        JSON.stringify(res.data)
+      );
+  }catch(error: any) {
+    console.log(error.response)
+    fs.writeFileSync(
+        path.join(process.cwd(), "public", "multiply", "vkey.json"),
+        JSON.stringify(error.response.data)
+      );
+  }
 }

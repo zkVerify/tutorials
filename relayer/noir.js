@@ -12,17 +12,43 @@ const base64Vk = bufvk.toString("base64");
 
 
 async function main() {
+
+    if(!fs.existsSync("noir-vkey.json")){
+        // Registering the verification key
+        try{
+            const regParams = {
+                "proofType": "ultraplonk",
+                "proofOptions": {
+                    "numberOfPublicInputs": 1
+                },
+                "vk": base64Vk
+            }
+            const regResponse = await axios.post(`${API_URL}/register-vk/${process.env.API_KEY}`, regParams);
+            fs.writeFileSync(
+                "noir-vkey.json",
+                JSON.stringify(regResponse.data)
+            );
+        }catch(error){
+            fs.writeFileSync(
+                "noir-vkey.json",
+                JSON.stringify(error.response.data)
+            );
+        }
+    }
+    
+
+    const vk = JSON.parse(fs.readFileSync("noir-vkey.json"));
     
     const params = {
         "proofType": "ultraplonk",
-        "vkRegistered": false,
+        "vkRegistered": true,
         "chainId":11155111,
         "proofOptions": {
             "numberOfPublicInputs": 1
         },
         "proofData": {
             "proof": base64Proof,
-            "vk": base64Vk
+            "vk": vk.vkHash || vk.meta.vkHash
         }
     }
 

@@ -10,9 +10,37 @@ const publicInputs = JSON.parse(fs.readFileSync("./assets/circom/public.json"));
 const key = JSON.parse(fs.readFileSync("./assets/circom/main.groth16.vkey.json"));
 
 async function main() {
+
+    // Registering the verification key
+    if(!fs.existsSync("circom-vkey.json")){
+        try{
+            const regParams = {
+                "proofType": "groth16",
+                "proofOptions": {
+                    "library": "snarkjs",
+                    "curve": "bn128"
+                },
+                "vk": key
+            }
+            const regResponse = await axios.post(`${API_URL}/register-vk/${process.env.API_KEY}`, regParams);
+            fs.writeFileSync(
+                "circom-vkey.json",
+                JSON.stringify(regResponse.data)
+            );
+        }catch(error){
+            fs.writeFileSync(
+                "circom-vkey.json",
+                JSON.stringify(error.response.data)
+            );
+        }
+    }
+    
+
+    const vk = JSON.parse(fs.readFileSync("circom-vkey.json"));
+
     const params = {
         "proofType": "groth16",
-        "vkRegistered": false,
+        "vkRegistered": true,
         "chainId":845320009,
         "proofOptions": {
             "library": "snarkjs",
@@ -21,7 +49,7 @@ async function main() {
         "proofData": {
             "proof": proof,
             "publicSignals": publicInputs,
-            "vk": key
+            "vk": vk.vkHash || vk.meta.vkHash
         }    
     }
 
